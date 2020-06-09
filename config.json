@@ -1,0 +1,10 @@
+[
+    {
+        "path": "/hola",
+        "response": "response1"
+    },
+    {
+        "path": "/chau",
+        "response": "response2"
+    }
+]
