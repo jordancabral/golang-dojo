@@ -3,8 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
+
+	"golang-dojo/app/mocks"
 )
 
 // Mock
@@ -28,20 +31,14 @@ func main() {
 	fmt.Println(mock)
 
 	for _, item := range mock {
-		handler(item.Path, item.Response)
+		setHandler(item.Path, item.Response)
 	}
 
 	http.ListenAndServe(":4000", nil)
 }
 
-func handler(path string, response string) {
+func setHandler(path string, response string) {
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, response)
-	})
-}
-
-func (mock Mock) handler() {
-	http.HandleFunc(mock.Path, func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, mock.Response)
+		fmt.Fprintf(w, mocks.ResponseHello(path), html.EscapeString(r.URL.Path))
 	})
 }
