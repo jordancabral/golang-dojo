@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"golang-dojo/app/mocks"
+	"github.com/jordancabral/golang-dojo/app/mocks"
 )
 
 // Mock
