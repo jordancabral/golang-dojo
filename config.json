@@ -1,10 +1,12 @@
 [
     {
         "path": "/hola",
-        "response": "app/mocks/test.json"
+        "response": "app/mocks/test.json",
+        "code": 201
     },
     {
         "path": "/chau",
-        "response": "response2"
+        "response": "response2",
+        "code": 202
     }
 ]

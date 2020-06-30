@@ -11,8 +11,7 @@ Golang dojo
 
 ### Features futuros
 
-- Panic con error con mensaje firendly (cuando ruta o file no esta definido )
-- Eleccion de Response codes
+- Catch de multiples tipos de error
 - Eleccion de Headers
 - Eleccion de Timeouts
 - Guardar la config en una DB

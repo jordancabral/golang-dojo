@@ -1,19 +1,19 @@
 package mocks
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 )
 
-func ResponseHello(fileName string) string {
+func ResponseHello(fileName string) (string, error) {
 
 	file, error := ioutil.ReadFile(fileName)
 	if error != nil {
-		panic(error)
+		return "", errors.New("file not found")
 	}
 
-	fmt.Println(file)
-	fmt.Printf("json %s", string(file))
+	fmt.Printf("Loaded mock response:\n%s", string(file))
 
-	return string(file)
+	return string(file), nil
 }
