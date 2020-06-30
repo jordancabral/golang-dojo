@@ -1,8 +1,19 @@
 package mocks
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+)
 
-func ResponseHello(body string) string {
-	s := fmt.Sprintf("%s Response", body)
-	return s
+func ResponseHello(fileName string) string {
+
+	file, error := ioutil.ReadFile(fileName)
+	if error != nil {
+		panic(error)
+	}
+
+	fmt.Println(file)
+	fmt.Printf("json %s", string(file))
+
+	return string(file)
 }

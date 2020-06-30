@@ -1,7 +1,7 @@
 [
     {
         "path": "/hola",
-        "response": "response1"
+        "response": "app/mocks/test.json"
     },
     {
         "path": "/chau",

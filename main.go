@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html"
 	"io/ioutil"
 	"net/http"
 
@@ -39,6 +38,6 @@ func main() {
 
 func setHandler(path string, response string) {
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, mocks.ResponseHello(path), html.EscapeString(r.URL.Path))
+		fmt.Fprintf(w, mocks.ResponseHello(response))
 	})
 }

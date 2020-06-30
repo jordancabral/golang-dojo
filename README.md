@@ -11,6 +11,10 @@ Golang dojo
 
 ### Features futuros
 
+- Panic con error con mensaje firendly (cuando ruta o file no esta definido )
+- Eleccion de Response codes
+- Eleccion de Headers
+- Eleccion de Timeouts
 - Guardar la config en una DB
 - CRUD para los mocks
 - Proxy para ir al mock o servicio real segun algun flag o header
