@@ -2,7 +2,15 @@
     {
         "path": "/hola",
         "response": "app/mocks/test.json",
-        "code": 201
+        "code": 201,
+        "headers": [
+           {
+               "key": "x-flow-country",
+               "value": "ar"
+           } 
+        ],
+        "proxy_mode": true,
+        "proxy_url": "https://www.google.com"
     },
     {
         "path": "/chau",

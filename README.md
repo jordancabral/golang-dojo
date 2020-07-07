@@ -11,12 +11,11 @@ Golang dojo
 
 ### Features futuros
 
-- Catch de multiples tipos de error
-- Eleccion de Headers
-- Eleccion de Timeouts
+- Proxy para ir al mock o servicio real segun algun flag o header (MVP echo)
 - Guardar la config en una DB
+- Eleccion de Timeouts
 - CRUD para los mocks
-- Proxy para ir al mock o servicio real segun algun flag o header
+- Catch de multiples tipos de error
 
 ### Run
 
