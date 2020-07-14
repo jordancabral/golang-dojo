@@ -11,7 +11,6 @@ Golang dojo
 
 ### Features futuros
 
-- Proxy para ir al mock o servicio real segun algun flag o header (MVP echo)
 - Guardar la config en una DB
 - Eleccion de Timeouts
 - CRUD para los mocks

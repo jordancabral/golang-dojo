@@ -1,5 +1,6 @@
 [
     {
+        "method": "GET",
         "path": "/hola",
         "response": "app/mocks/test.json",
         "code": 201,
@@ -10,7 +11,7 @@
            } 
         ],
         "proxy_mode": true,
-        "proxy_url": "https://www.google.com"
+        "proxy_url": "http://localhost:3000"
     },
     {
         "path": "/chau",
