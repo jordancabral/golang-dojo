@@ -11,11 +11,13 @@ Golang dojo
 
 ### Features futuros
 
+- Validacion del config
 - Guardar la config en una DB
 - Eleccion de Timeouts
 - CRUD para los mocks
 - Catch de multiples tipos de error
-
+- Test
+  
 ### Run
 
 ```go run main.go```

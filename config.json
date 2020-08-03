@@ -10,7 +10,21 @@
                "value": "ar"
            } 
         ],
-        "proxy_mode": true,
+        "proxy_mode": false,
+        "proxy_url": "http://localhost:3000"
+    },
+    {
+        "method": "POST",
+        "path": "/hola",
+        "response": "app/mocks/testpost.json",
+        "code": 201,
+        "headers": [
+           {
+               "key": "x-flow-country",
+               "value": "ar"
+           } 
+        ],
+        "proxy_mode": false,
         "proxy_url": "http://localhost:3000"
     },
     {
