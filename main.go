@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/jordancabral/golang-dojo/app/mocks"
+	"github.com/softbrewery/gojoi/pkg/joi"
 )
 
 // Mock
@@ -24,6 +25,26 @@ type Mock struct {
 type CustomHeader struct {
 	Key   string
 	Value string
+}
+
+func validateMock(mock Mock) error {
+
+	schemaCustomHeader := joi.Struct().Keys(joi.StructKeys{
+		"key":   joi.String().NonZero(),
+		"value": joi.String().NonZero(),
+	})
+
+	schemaMock := joi.Struct().Keys(joi.StructKeys{
+		"Path":      joi.String().NonZero(),
+		"Method":    joi.String().NonZero(),
+		"Response":  joi.String().NonZero(),
+		"Code":      joi.Int().NonZero(),
+		"Headers":   joi.Slice().Items(schemaCustomHeader),
+		"ProxyMode": joi.Bool().Required(),
+		"ProxyUrl":  joi.String().NonZero(),
+	})
+	err := joi.Validate(mock, schemaMock)
+	return err
 }
 
 func main() {
@@ -44,9 +65,16 @@ func main() {
 	paths := make(map[string][]Mock)
 
 	for _, item := range mock {
-		pathArray := paths[item.Path]
-		pathArray = append(pathArray, item)
-		paths[item.Path] = pathArray
+		validate := validateMock(item)
+		if nil != validate {
+			fmt.Println("mock mal armado")
+			fmt.Println(item.Path)
+			fmt.Println(validate)
+		} else {
+			pathArray := paths[item.Path]
+			pathArray = append(pathArray, item)
+			paths[item.Path] = pathArray
+		}
 	}
 
 	for key, val := range paths {

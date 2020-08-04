@@ -1,0 +1,4 @@
+github.com/badoux/checkmail v1.2.0 h1:ZOnZR1ltCfSK4fDWs+65mUDy+E2QRX6oJB7K5GLP3LA=
+github.com/badoux/checkmail v1.2.0/go.mod h1:XroCOBU5zzZJcLvgwU15I+2xXyCdTWXyR9MGfRhBYy0=
+github.com/softbrewery/gojoi v0.0.0-20180423202125-34d5e1054ec7 h1:JYS6bLbT96aLeYtdmAdZ5fhvwLrK4JRao4K0bK7N5lI=
+github.com/softbrewery/gojoi v0.0.0-20180423202125-34d5e1054ec7/go.mod h1:5w5CHxUYoWjrsl3+TPI1aXnuX+2d0OjrLBTsrKYd1X8=

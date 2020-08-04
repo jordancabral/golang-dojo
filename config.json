@@ -26,10 +26,5 @@
         ],
         "proxy_mode": false,
         "proxy_url": "http://localhost:3000"
-    },
-    {
-        "path": "/chau",
-        "response": "response2",
-        "code": 202
     }
 ]
