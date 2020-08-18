@@ -10,8 +10,11 @@ Golang dojo
 - Cada path apunta a algun archivo a donde buscar el response mockeado (TODO)
 
 ### Features futuros
-- Validacion del config( deduda tecnica error que se vea bonito en esta lib o otra)
-- Guardar la config en una DB
+- Guardar la config en una DB:
+  - Load config de DB
+  - CRUD completo
+  - Refactorizar (modularizar, repository, model, etc)
+- Validacion del config( deuda tecnica error que se vea bonito en esta lib o otra)
 - Eleccion de Timeouts
 - CRUD para los mocks
 - Catch de multiples tipos de error

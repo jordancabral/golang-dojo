@@ -7,19 +7,23 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/Kamva/mgm"
 	"github.com/jordancabral/golang-dojo/app/mocks"
 	"github.com/softbrewery/gojoi/pkg/joi"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Mock
 type Mock struct {
-	Path      string
-	Method    string
-	Response  string
-	Code      int
-	Headers   []CustomHeader
-	ProxyMode bool   `json:"proxy_mode"`
-	ProxyUrl  string `json:"proxy_url"`
+	mgm.DefaultModel `bson:",inline"`
+	Path             string
+	Method           string
+	Response         string
+	Code             int
+	Headers          []CustomHeader
+	ProxyMode        bool   `json:"proxy_mode"`
+	ProxyUrl         string `json:"proxy_url"`
 }
 
 type CustomHeader struct {
@@ -49,6 +53,24 @@ func validateMock(mock Mock) error {
 
 func main() {
 	fmt.Println("Starting Mock Server")
+
+	// DB startup
+	err := mgm.SetDefaultConfig(nil, "mock_server", options.Client().ApplyURI("mongodb://localhost:27017"))
+	if nil != err {
+		panic(err)
+	}
+
+	// Config find all
+	ctx := mgm.Ctx()
+	coll := mgm.Coll(&Mock{})
+	result, _err := coll.Find(ctx, bson.D{})
+	if _err != nil {
+		panic(_err)
+	}
+	mockList := []Mock{}
+	result.All(ctx, &mockList)
+	fmt.Println("Configs loaded from DB:")
+	fmt.Println(mockList)
 
 	file, error := ioutil.ReadFile("config.json")
 	if error != nil {
