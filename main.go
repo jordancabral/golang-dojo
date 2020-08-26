@@ -1,35 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 
-	"github.com/Kamva/mgm"
 	"github.com/jordancabral/golang-dojo/app/mocks"
+	. "github.com/jordancabral/golang-dojo/app/model"
+	"github.com/jordancabral/golang-dojo/app/repository"
 	"github.com/softbrewery/gojoi/pkg/joi"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-// Mock
-type Mock struct {
-	mgm.DefaultModel `bson:",inline"`
-	Path             string
-	Method           string
-	Response         string
-	Code             int
-	Headers          []CustomHeader
-	ProxyMode        bool   `json:"proxy_mode"`
-	ProxyUrl         string `json:"proxy_url"`
-}
-
-type CustomHeader struct {
-	Key   string
-	Value string
-}
 
 func validateMock(mock Mock) error {
 
@@ -54,39 +34,14 @@ func validateMock(mock Mock) error {
 func main() {
 	fmt.Println("Starting Mock Server")
 
-	// DB startup
-	err := mgm.SetDefaultConfig(nil, "mock_server", options.Client().ApplyURI("mongodb://localhost:27017"))
-	if nil != err {
-		panic(err)
-	}
+	mockTest := Mock{Path: "http://localhostasdasd", Method: "GET", Response: "SARASA", Code: 1, ProxyMode: false, ProxyUrl: "sdadsadsadsa"}
 
-	// Config find all
-	ctx := mgm.Ctx()
-	coll := mgm.Coll(&Mock{})
-	result, _err := coll.Find(ctx, bson.D{})
-	if _err != nil {
-		panic(_err)
-	}
-	mockList := []Mock{}
-	result.All(ctx, &mockList)
-	fmt.Println("Configs loaded from DB:")
-	fmt.Println(mockList)
-
-	file, error := ioutil.ReadFile("config.json")
-	if error != nil {
-		panic(error)
-	}
-
-	mock := []Mock{}
-
-	json.Unmarshal(file, &mock)
-
-	fmt.Println("Loaded mocks:")
-	fmt.Printf("%+v\n", mock)
+	repository.CreateConfig(mockTest)
+	result := repository.GetAllConfigs()
 
 	paths := make(map[string][]Mock)
 
-	for _, item := range mock {
+	for _, item := range result {
 		validate := validateMock(item)
 		if nil != validate {
 			fmt.Println("mock mal armado")
@@ -116,10 +71,8 @@ func setPath(path string, mocks []Mock) {
 				return
 			}
 		}
-
 		http.Error(w, "Invalid Method", http.StatusMethodNotAllowed)
 		return
-
 	})
 }
 

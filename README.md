@@ -12,11 +12,12 @@ Golang dojo
 ### Features futuros
 - Guardar la config en una DB:
   - Load config de DB
-  - CRUD completo
+  - API CRUD completo
   - Refactorizar (modularizar, repository, model, etc)
+- Guardar mocks en una DB:
+  - CRUD
 - Validacion del config( deuda tecnica error que se vea bonito en esta lib o otra)
 - Eleccion de Timeouts
-- CRUD para los mocks
 - Catch de multiples tipos de error
 - Test
 - Dockerizar
