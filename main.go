@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/jordancabral/golang-dojo/app/mocks"
 	. "github.com/jordancabral/golang-dojo/app/model"
 	"github.com/jordancabral/golang-dojo/app/repository"
@@ -34,90 +35,90 @@ func validateMock(mock Mock) error {
 func main() {
 	fmt.Println("Starting Mock Server")
 
-	mockTest := Mock{Path: "http://localhostasdasd", Method: "GET", Response: "SARASA", Code: 1, ProxyMode: false, ProxyUrl: "sdadsadsadsa"}
+	//Create config (for testing pourposes)
+	//mockTest := Mock{Path: "/hola", Method: "GET", Response: "app/mocks/test.json", Code: 200, ProxyMode: false, ProxyUrl: "http://www.google.com"}
+	//repository.CreateConfig(mockTest)
 
-	repository.CreateConfig(mockTest)
+	// Init Gin
+	r := gin.Default()
+
+	// mock config CRUD
+	// example curl: curl -XPOST http://localhost:8080/mock --header 'Content-Type: application/json' --data-raw '{"path":"test","Method":"GET", "Response": "app/mocks/test.json", "Code": 200, "ProxyMode": false, "ProxyUrl": "http://www.google.com"}'
+	// TODO: extract to module
+	r.POST("/mock", func(c *gin.Context) {
+		mockTest := Mock{}
+		c.ShouldBind(&mockTest)
+
+		validate := validateMock(mockTest)
+		if nil != validate {
+			fmt.Println("mock mal armado")
+			c.JSON(400, gin.H{"message": "mock mal armado"})
+		} else {
+			repository.CreateConfig(mockTest)
+			c.JSON(200, gin.H{"message": "ok"})
+		}
+	})
+
+	// Load mock configs from DB and configure the routes
 	result := repository.GetAllConfigs()
-
-	paths := make(map[string][]Mock)
-
 	for _, item := range result {
 		validate := validateMock(item)
 		if nil != validate {
 			fmt.Println("mock mal armado")
-			fmt.Println(item.Path)
-			fmt.Println(validate)
 		} else {
-			pathArray := paths[item.Path]
-			pathArray = append(pathArray, item)
-			paths[item.Path] = pathArray
-		}
-	}
+			mock := item
+			r.Handle(mock.Method, mock.Path, func(c *gin.Context) {
 
-	for key, val := range paths {
-		setPath(key, val)
-	}
-	//setHandler(item.Path, item.Response, item.Code, item.Headers, item.ProxyMode, item.ProxyUrl, item.Method)
+				// If proxy is enabled, make the request
+				if mock.ProxyMode {
+					loadProxy(c, mock)
+					return
+				}
 
-	http.ListenAndServe(":4000", nil)
-}
-
-func setPath(path string, mocks []Mock) {
-	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-
-		for _, val := range mocks {
-			if val.Method == r.Method {
-				setHandler(val.Path, val.Response, val.Code, val.Headers, val.ProxyMode, val.ProxyUrl, val.Method, w, r)
+				// If proxy is disabled load mock
+				response, error := mocks.LoadMock(mock.Response)
+				if error != nil {
+					message := "File not found for this path: " + item.Response
+					c.JSON(http.StatusNotImplemented, gin.H{"message": message})
+					return
+				}
+				c.Data(http.StatusOK, "application/json", []byte(response))
 				return
-			}
+			})
 		}
-		http.Error(w, "Invalid Method", http.StatusMethodNotAllowed)
-		return
-	})
+	}
+	r.Run()
+
 }
 
-func setHandler(path string, response string, statusCode int, Headers []CustomHeader, ProxyMode bool, ProxyUrl string, method string, w http.ResponseWriter, r *http.Request) {
+// TODO: extract to module
+func loadProxy(c *gin.Context, mock Mock) {
+	fmt.Printf("Proxy enabled, URL: %s Method: %s", mock.ProxyUrl, mock.Method)
+	var myBody io.Reader
+	myHeaders := c.Request.Header
+	if mock.Method != "GET" {
+		myBody = c.Request.Body
+	}
+	request, requestError := http.NewRequest(mock.Method, mock.ProxyUrl, myBody)
+	if requestError != nil {
+		panic(requestError)
+	}
 
-	if ProxyMode == true {
-		fmt.Printf("\nEsto deberia ser el proxy, url:%s", ProxyUrl)
-		fmt.Printf("\nMethod:%s", r.Method)
-		var myBody io.Reader
-		myHeaders := r.Header
-		if r.Method != "GET" {
-			myBody = r.Body
-		}
-		request, requestError := http.NewRequest(r.Method, ProxyUrl, myBody)
-		if requestError != nil {
-			panic(requestError)
-		}
-
-		request.Header = myHeaders
-		client := &http.Client{}
-		proxyResponse, proxyError := client.Do(request)
-		if proxyError != nil {
-			http.Error(w, "Rompió el proxy:"+ProxyUrl, http.StatusBadGateway)
-			return
-		}
-		fmt.Println("Response status:", proxyResponse.Status)
-
-		for key, header := range proxyResponse.Header {
-			for _, h := range header {
-				w.Header().Set(key, h)
-			}
-		}
-
-		io.Copy(w, proxyResponse.Body)
+	request.Header = myHeaders
+	client := &http.Client{}
+	proxyResponse, proxyError := client.Do(request)
+	if proxyError != nil {
+		message := "Proxy error: " + mock.ProxyUrl + proxyError.Error()
+		c.JSON(http.StatusBadGateway, gin.H{"message": message})
 		return
 	}
-	response, error := mocks.ResponseHello(response)
-	if error != nil {
-		http.Error(w, "File not found for this path", http.StatusNotImplemented)
-		return
+	fmt.Println("Proxy response status:", proxyResponse.Status)
+
+	for key, header := range proxyResponse.Header {
+		for _, h := range header {
+			c.Header(key, h)
+		}
 	}
-	fmt.Printf("\nResponse with code:%d for path:%s, headers:%s", statusCode, path, Headers)
-	for _, header := range Headers {
-		w.Header().Set(header.Key, header.Value)
-	}
-	w.WriteHeader(statusCode)
-	fmt.Fprintf(w, response)
+	io.Copy(c.Writer, proxyResponse.Body)
+	return
 }

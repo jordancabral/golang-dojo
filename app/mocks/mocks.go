@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 )
 
-func ResponseHello(fileName string) (string, error) {
+func LoadMock(fileName string) (string, error) {
 
 	file, error := ioutil.ReadFile(fileName)
 	if error != nil {
