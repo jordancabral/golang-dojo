@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/Kamva/mgm"
 	. "github.com/jordancabral/golang-dojo/app/model"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -14,6 +16,29 @@ func init() {
 	if nil != err {
 		panic(err)
 	}
+}
+
+// GetConfig
+func GetConfig(method, path string) (*Mock, error) {
+	mock := Mock{}
+	coll := mgm.Coll(&Mock{})
+	err := coll.First(bson.M{"path": path, "method": method}, &mock)
+	if err != nil {
+		fmt.Println("Path not found")
+		return nil, errors.New("path not found")
+	}
+	return &mock, nil
+}
+
+func GetConfigById(id string) (*Mock, error) {
+	mock := Mock{}
+	coll := mgm.Coll(&Mock{})
+	err := coll.FindByID(id, &mock)
+	if err != nil {
+		fmt.Println("id not found")
+		return nil, errors.New("id not found")
+	}
+	return &mock, nil
 }
 
 func GetAllConfigs() Mocks {
@@ -42,11 +67,30 @@ func CreateConfig(mock Mock) {
 	}
 }
 
-func DeleteConfig(mock Mock) {
+// DeleteConfigById ...
+func DeleteConfigById(id string) error {
+	ctx := mgm.Ctx()
 	coll := mgm.Coll(&Mock{})
-
-	_err := coll.Delete(&mock)
-	if _err != nil {
-		panic(_err)
+	idPrimitive, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		fmt.Println("primitive.ObjectIDFromHex ERROR:", err)
+		return errors.New("Error deleting")
 	}
+	_, err2 := coll.DeleteOne(ctx, bson.M{"_id": idPrimitive})
+	if err2 != nil {
+		fmt.Println("ERROR:", err2)
+		return errors.New("Error deleting")
+	}
+	return nil
+}
+
+// UpdateConfig ...
+func UpdateConfig(mock Mock) error {
+	coll := mgm.Coll(&Mock{})
+	err := coll.Update(&mock)
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		return errors.New("Error updating")
+	}
+	return nil
 }
