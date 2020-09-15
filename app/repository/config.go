@@ -58,17 +58,20 @@ func GetAllConfigs() Mocks {
 	return mockList
 }
 
-func CreateConfig(mock Mock) {
+// CreateConfig ...
+func CreateConfig(mock Mock) error {
 	coll := mgm.Coll(&Mock{})
 
-	_err := coll.Create(&mock)
-	if _err != nil {
-		panic(_err)
+	err := coll.Create(&mock)
+	if err != nil {
+		fmt.Println("ERROR:", err)
+		return errors.New("Error creating")
 	}
+	return nil
 }
 
-// DeleteConfigById ...
-func DeleteConfigById(id string) error {
+// DeleteConfigByID ...
+func DeleteConfigByID(id string) error {
 	ctx := mgm.Ctx()
 	coll := mgm.Coll(&Mock{})
 	idPrimitive, err := primitive.ObjectIDFromHex(id)

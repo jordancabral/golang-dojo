@@ -19,10 +19,14 @@ func CreateConfig(c *gin.Context) {
 	if nil != validate {
 		fmt.Println("mock mal armado")
 		c.JSON(400, gin.H{"message": "mock mal armado"})
-	} else {
-		repository.CreateConfig(mockTest)
-
 	}
+
+	err := repository.CreateConfig(mockTest)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error creating"})
+		return
+	}
+	c.AbortWithStatus(http.StatusCreated)
 }
 
 // GetAllConfigs ...
@@ -37,7 +41,7 @@ func GetConfig(c *gin.Context) {
 	id := c.Param("id")
 	mockConfig, err := repository.GetConfigById(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "path not found"}) // TODO: empty response
+		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 	c.JSON(200, mockConfig)
@@ -47,12 +51,12 @@ func GetConfig(c *gin.Context) {
 // RemoveConfig ...
 func RemoveConfig(c *gin.Context) {
 	id := c.Param("id")
-	err := repository.DeleteConfigById(id)
+	err := repository.DeleteConfigByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "path not found"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "ok"}) // TODO: empty response
+	c.AbortWithStatus(http.StatusOK)
 	return
 }
 
@@ -74,7 +78,7 @@ func UpdateConfig(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error updating"})
 		return
 	}
-	c.JSON(200, gin.H{"message": "ok"}) // TODO: empty response
+	c.AbortWithStatus(http.StatusOK)
 	return
 }
 
