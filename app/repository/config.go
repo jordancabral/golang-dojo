@@ -3,8 +3,10 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/Kamva/mgm"
+	"github.com/joho/godotenv"
 	. "github.com/jordancabral/golang-dojo/app/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,7 +14,16 @@ import (
 )
 
 func init() {
-	err := mgm.SetDefaultConfig(nil, "mock_server", options.Client().ApplyURI("mongodb://localhost:27017"))
+
+	_err := godotenv.Load()
+	if _err != nil {
+		fmt.Println("Error loading .env file: " + _err.Error())
+	}
+
+	mongoURI := os.Getenv("MONGO_URI")
+	fmt.Println("Mongo URI: " + mongoURI)
+
+	err := mgm.SetDefaultConfig(nil, "mock_server", options.Client().ApplyURI(mongoURI))
 	if nil != err {
 		panic(err)
 	}

@@ -8,6 +8,7 @@ import (
 	. "github.com/jordancabral/golang-dojo/app/model"
 	"github.com/jordancabral/golang-dojo/app/repository"
 	"github.com/softbrewery/gojoi/pkg/joi"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CreateConfig ...
@@ -72,7 +73,13 @@ func UpdateConfig(c *gin.Context) {
 	}
 
 	id := c.Param("id")
-	updatedMock.SetID(id)
+	idPrimitive, _err := primitive.ObjectIDFromHex(id)
+	if _err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error updating"})
+		return
+	}
+
+	updatedMock.SetID(idPrimitive)
 	err := repository.UpdateConfig(updatedMock)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error updating"})
